@@ -185,8 +185,7 @@ feature -- Commands
 			end
 		end
 
-
-	table_exists (name: STRING) : BOOLEAN
+	 table_exists (name: STRING) : BOOLEAN
 		local
 			exists: BOOLEAN
 		do
@@ -208,6 +207,26 @@ feature -- Commands
 				Result:=exists
 			end
 		end
+
+	delete_table (name: STRING)
+		require
+			not get_tables.is_empty
+		do
+			from
+				tables.start
+			until
+				tables.off
+			loop
+				if tables.item.get_nom.is_equal (name) then
+					tables.prune (tables.item)
+				end
+				if not tables.off then
+					tables.forth
+				end
+			end
+		end
+
+
 
 
 feature -- User input
@@ -333,6 +352,24 @@ feature -- User input
 				    			io.put_new_line
 				    			io.put_string ("%T%TNo hay ninguna tabla con el nombre indicado")
 							end
+						end
+					end
+				elseif com.is_equal ("borrartab") then
+					if tables.is_empty then
+						io.put_string ("%T-- Error con el comando borrartab --")
+				    	io.put_new_line
+				    	io.put_string ("%T%TNo hay tablas existentes")
+					else
+						if tokens.count<2 then
+							io.put_string ("%T-- Error con el comando borrartab --")
+				    		io.put_new_line
+				    		io.put_string ("%T%TSe debe ingrsar el nombre de la tabla a borrar:")
+				    		io.put_new_line
+							io.put_string ("%T%Tborrartab <Nombre tabla> %T%T- Elimina tabla con el nombre dado y sus datos")
+						else
+							tokens.forth
+							name:=tokens.item
+							delete_table(name)
 						end
 					end
 				else
