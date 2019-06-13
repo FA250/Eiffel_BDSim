@@ -329,6 +329,22 @@ feature -- Commands
 			end
 		end
 
+	elim(table_name,field,operator,condition:STRING)
+		require
+			not get_tables.is_empty
+		do
+			from
+				tables.start
+			until
+				tables.off
+			loop
+				if tables.item.get_nom.is_equal (table_name) then
+					tables.item.elim(field,operator,condition)
+				end
+				tables.forth
+			end
+		end
+
 
 feature -- User input
 	execute_cmd (s:STRING)
@@ -553,6 +569,37 @@ feature -- User input
 						end
 					end
 				end
+				elseif com.is_equal ("elim") then
+							if tables.is_empty then
+								io.put_string ("%T-- Error con el comando listar --")
+						    	io.put_new_line
+						    	io.put_string ("%T%TNo hay tablas existentes")
+							else
+								if tokens.count>4 then
+									tokens.forth
+									name:=tokens.item
+									tokens.forth
+									field:=tokens.item
+									tokens.forth
+									operator:=tokens.item
+									tokens.forth
+									condition:=tokens.item
+									if verify_table_data_exits(name) then
+										elim(name,field,operator,condition)
+									else
+										io.put_string ("%T-- Error con el comando elim --")
+						    			io.put_new_line
+						    			io.put_string ("%T%TTodavia no existen datos en la tabla")
+									end
+								else
+									io.put_string ("%T-- Error con el comando elim --")
+						    		io.put_new_line
+						    		io.put_string ("%T%TSe debe ingresar el nombre de la tabla, y la condicion para eliminarlo:")
+						    		io.put_new_line
+									io.put_string ("%T%Telim <Nombre tabla> <Condicion> %T- Elimina los datos que cumplan con la condicion de la tabla indicada")
+									io.put_new_line
+								end
+							end
 				else
 					current_command:="none"
 				    io.put_string ("%Tcomando_desconocido%N")

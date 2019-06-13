@@ -45,7 +45,7 @@ feature -- Basic operations
 
 	add_data (new_data: STRING)
 		do
-			column_data.force (new_data)
+			column_data.extend (new_data)
 		end
 
 	verify_data (new_data: STRING):BOOLEAN
@@ -70,15 +70,12 @@ feature -- Basic operations
 			end
 		end
 
-
+feature
 	delete_data (index: INTEGER)
-		require
-			data_exits: not get_data.is_empty
 		do
 			column_data.go_i_th (index)
-			column_data.remove
-		ensure
-			column_data/=old column_data
+			column_data.remove()
+
 		end
 
 feature {NONE} -- Implementation

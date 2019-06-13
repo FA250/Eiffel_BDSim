@@ -32,6 +32,10 @@ feature -- Basic operations
 		deferred
 		end
 
+	delete_data(index: INTEGER)
+		deferred
+		end
+
 
 feature {NONE} -- Implementation
 	column_name: STRING

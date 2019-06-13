@@ -32,6 +32,35 @@ feature -- Access
 		do Result :=rows.count end
 
 feature -- Basic operations
+	elim(field,operator,condition:STRING)
+		local
+			contRows:INTEGER
+			column:COLUMNA
+			c:COLUMNA
+		do
+			rows.start
+			c:=rows.item
+
+			from
+				contRows:=0
+			until
+				contRows.is_equal (c.get_count)
+			loop
+				if verify_condition(field,operator,condition,contRows) then
+					from
+						rows.start
+					until
+						rows.off
+					loop
+						column:=rows.item
+						column.delete_data (contRows)
+						rows.forth
+					end
+				end
+					contRows:=contRows+1
+			end
+		end
+
 	show_columns_condition(field,operator,condition:STRING)
 		local
 			contRows:INTEGER
