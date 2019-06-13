@@ -226,6 +226,92 @@ feature -- Commands
 			end
 		end
 
+	verify_number_columns(tableName: STRING; data : LIST[STRING]) :BOOLEAN
+		local
+			table:TABLA
+			correct_number:BOOLEAN
+		do
+			from
+				tables.start
+				correct_number:=false
+			until
+				tables.off
+			loop
+				table:= tables.item
+				if table.get_nom.is_equal (tableName) and table.get_number_rows.is_equal (data.count) then
+					correct_number:=true
+				end
+
+				tables.forth
+			end
+			Result:=correct_number
+		end
+
+	ins(tableName:STRING; data : LIST[STRING])
+		require
+			not get_tables.is_empty
+		local
+			table:TABLA
+		do
+			from
+				tables.start
+			until
+				tables.off
+			loop
+				table:=tables.item
+				if table.get_nom.is_equal (tableName) then
+					if table.verify_data(data) then
+						table.add_row (data)
+						io.put_string ("%TLos datos se insertaron correctamente")
+				    	io.put_new_line
+				    else
+				    	io.put_string ("%TEl id ingresado ya existe")
+				    	io.put_new_line
+					end
+
+				end
+
+				tables.forth
+			end
+		end
+
+	verify_table_data_exits(table_name: STRING):BOOLEAN
+		local
+			exists:BOOLEAN
+		do
+			if tables.count>0 then
+				from
+					tables.start
+					exists:=false
+				until
+					tables.off
+				loop
+					if tables.item.get_rows.count>0 and tables.item.get_nom.is_equal (table_name) then
+						exists:=true
+					end
+					tables.forth
+				end
+				Result:=exists
+			else
+				Result:=false
+			end
+		end
+
+	listar(table_name:STRING)
+		local
+			columns:ARRAYED_LIST[COLUMNA]
+		do
+			from
+				tables.start
+			until
+				tables.off
+			loop
+				if tables.item.get_nom.is_equal (table_name) then
+					tables.item.show_columns
+				end
+				tables.forth
+			end
+		end
 
 
 
@@ -363,7 +449,7 @@ feature -- User input
 						if tokens.count<2 then
 							io.put_string ("%T-- Error con el comando borrartab --")
 				    		io.put_new_line
-				    		io.put_string ("%T%TSe debe ingrsar el nombre de la tabla a borrar:")
+				    		io.put_string ("%T%TSe debe ingresar el nombre de la tabla a borrar:")
 				    		io.put_new_line
 							io.put_string ("%T%Tborrartab <Nombre tabla> %T%T- Elimina tabla con el nombre dado y sus datos")
 						else
@@ -372,6 +458,70 @@ feature -- User input
 							delete_table(name)
 						end
 					end
+				elseif com.is_equal ("ins") then
+				if tables.is_empty then
+					io.put_string ("%T-- Error con el comando ins --")
+			    	io.put_new_line
+			    	io.put_string ("%T%TNo hay tablas existentes")
+				else
+					if tokens.count<3 then
+						io.put_string ("%T-- Error con el comando ins --")
+			    		io.put_new_line
+			    		io.put_string ("%T%TSe debe ingresar el nombre de la tabla y la lista de datos separadas por ;")
+			    		io.put_new_line
+						io.put_string ("%T%Tins <Nombre tabla> <Lista valores> %T- Inserta en la tabla especificada la lista de valores dada")
+					else
+						tokens.forth
+						name:=tokens.item
+						tokens.forth
+						tokens:= tokens.item.split (';')
+						if verify_number_columns(name,tokens) then
+							ins(name, tokens)
+						else
+							io.put_string ("%T-- Error con el comando ins --")
+			    			io.put_new_line
+			    			io.put_string ("%T%TLa cantidad de datos no concuerdan con la cantidad de columnas")
+						end
+
+					end
+				end
+				elseif com.is_equal ("listar") then
+				if tables.is_empty then
+					io.put_string ("%T-- Error con el comando listar --")
+			    	io.put_new_line
+			    	io.put_string ("%T%TNo hay tablas existentes")
+				else
+					if tokens.count<2 then
+						io.put_string ("%T-- Error con el comando listar --")
+			    		io.put_new_line
+			    		io.put_string ("%T%TSe debe ingresar al menos el nombre de la tabla:")
+			    		io.put_new_line
+						io.put_string ("%T%Tlistar <Nombre tabla> %T%T%T- Muestra todos los datos de la tabla")
+						io.put_new_line
+						io.put_string ("%T%Tlistar <Nombre tabla> <Condicion> %T- Muestra los datos de la tabla que cumplan con la condicion")
+						io.put_new_line
+					elseif tokens.count<3  then
+						tokens.forth
+						name:=tokens.item
+						if verify_table_data_exits(name) then
+							listar(name)
+						else
+							io.put_string ("%T-- Error con el comando listar --")
+			    			io.put_new_line
+			    			io.put_string ("%T%TTodavia no existen datos en la tabla")
+						end
+					else
+						tokens.forth
+						name:=tokens.item
+						if verify_table_data_exits(name) then
+							--listar_condicion(name)
+						else
+							io.put_string ("%T-- Error con el comando listar --")
+			    			io.put_new_line
+			    			io.put_string ("%T%TTodavia no existen datos en la tabla")
+						end
+					end
+				end
 				else
 					current_command:="none"
 				    io.put_string ("%Tcomando_desconocido%N")

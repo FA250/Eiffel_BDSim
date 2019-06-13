@@ -9,6 +9,9 @@ feature -- Access
 		do Result :=type end
 	get_no_replicate : BOOLEAN
 		do Result :=not_replicates end
+	get_count: INTEGER
+		deferred end
+
 
 feature -- Basic operations
 	not_replicate_data
@@ -16,6 +19,19 @@ feature -- Basic operations
 		ensure
 			not_replicates/=old not_replicates
 		end
+
+	add_data(new_data :STRING)
+		deferred
+		end
+
+	verify_data(new_data :STRING):BOOLEAN
+		deferred
+		end
+
+	get_data_row(index: INTEGER) :STRING
+		deferred
+		end
+
 
 feature {NONE} -- Implementation
 	column_name: STRING

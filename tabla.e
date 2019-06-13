@@ -28,9 +28,56 @@ feature -- Access
 		do Result :=id end
 	get_rows : ARRAYED_LIST[COLUMNA]
 		do Result :=rows end
-
+	get_number_rows : INTEGER
+		do Result :=rows.count end
 
 feature -- Basic operations
+	show_columns()
+		local
+			contRows:INTEGER
+			column:COLUMNA
+			c:COLUMNA
+		do
+			rows.start
+			c:=rows.item
+			print("%N")
+			print_column_names
+			from
+				contRows:=0
+			until
+				contRows.is_equal (c.get_count)
+			loop
+				from
+					rows.start
+				until
+					rows.off
+				loop
+					print ("%T")
+					column:=rows.item
+					print(column.get_data_row(contRows))
+					print ("%T")
+					rows.forth
+				end
+				print ("%N")
+
+				contRows:=contRows+1
+			end
+		end
+
+	print_column_names
+		do
+			from
+				rows.start
+			until
+				rows.off
+			loop
+				print ("%T")
+				print(rows.item.get_nom)
+				print ("%T%N")
+				rows.forth
+			end
+		end
+
 	add_column (name, type: STRING)
 		require
 			coherent_type: type.is_equal ("str") or type.is_equal ("int")
@@ -88,6 +135,47 @@ feature -- Basic operations
 
 				Result:=exists
 			end
+		end
+
+	add_row (data_columns : LIST[STRING])
+		require
+			not data_columns.is_empty
+		do
+			from
+				data_columns.start
+				rows.start
+			until
+				data_columns.off
+			loop
+				rows.item.add_data (data_columns.item)
+
+				data_columns.forth
+				rows.forth
+			end
+		end
+
+	verify_data(data_columns: LIST[STRING]):BOOLEAN
+		require
+			not data_columns.is_empty
+		local
+			data_ok:BOOLEAN
+		do
+			from
+				data_columns.start
+				rows.start
+				data_ok:=true
+			until
+				rows.off
+			loop
+				if not rows.item.verify_data (data_columns.item) then
+					data_ok:=false
+				end
+
+				data_columns.forth
+				rows.forth
+			end
+			Result:=data_ok
+
 		end
 
 feature {NONE} --Implementation
