@@ -20,11 +20,11 @@ feature {NONE} -- Initialization
 		do
 			column_name:=name
 			type:= "int"
-			create column_data.make (0)
+			create column_data.make
 		end
 
 feature -- Access
-	get_data : ARRAYED_LIST[INTEGER]
+	get_data : LINKED_LIST[INTEGER]
 		do Result :=column_data end
 
 	get_count: INTEGER
@@ -35,7 +35,7 @@ feature -- Basic operations
 		local
 			temp_row: INTEGER
 		do
-			temp_row:=column_data.array_at(index)
+			temp_row:=column_data.at(index)
 			Result:= temp_row.out
 		end
 
@@ -71,6 +71,30 @@ feature -- Basic operations
 			end
 		end
 
+
+	verify_condition(operator,condition:STRING; contRows:INTEGER):BOOLEAN
+		local
+			data:INTEGER
+			ok:BOOLEAN
+		do
+			data:=get_data_row (contRows).to_integer
+			if operator.is_equal ("=")then
+					ok:=data.is_equal (condition.to_integer)
+			elseif operator.is_equal ("!=") then
+					ok:=not data.is_equal (condition.to_integer)
+			elseif operator.is_equal ("<") then
+					ok:=data < condition.to_integer
+			elseif operator.is_equal ("<=") then
+					ok:=data <= condition.to_integer
+			elseif operator.is_equal (">=") then
+					ok:=data >= condition.to_integer
+			elseif operator.is_equal (">") then
+					ok:=data > condition.to_integer
+			end
+
+			Result:=ok
+		end
+
 feature
 	delete_data (index: INTEGER)
 		do
@@ -80,6 +104,6 @@ feature
 		end
 
 feature {NONE} -- Implementation
-	column_data: ARRAYED_LIST[INTEGER]
+	column_data: LINKED_LIST[INTEGER]
 
 end

@@ -19,7 +19,7 @@ feature {NONE} -- Initialization
 		local
 			line: STRING
 		do
-			create tables.make(0)
+			create tables.make
 			create new_table.make ("")
 			io.put_string ("Escriba los comandos que necesite")
 			io.put_new_line
@@ -45,7 +45,7 @@ feature -- Access
 	get_new_table : TABLA
 		do Result :=new_table end
 
-	get_tables : ARRAYED_LIST[TABLA]
+	get_tables : LINKED_LIST[TABLA]
 		do Result :=tables end
 
 feature -- Commands
@@ -167,7 +167,7 @@ feature -- Commands
 
 	show_columns_table (table: TABLA)
 		local
-			columns: ARRAYED_LIST[COLUMNA]
+			columns: LINKED_LIST[COLUMNA]
 		do
 			columns:=table.get_rows
 			from
@@ -608,7 +608,7 @@ feature -- User input
 		end
 
 feature {NONE} --Implementation
-	tables: ARRAYED_LIST[TABLA]
+	tables: LINKED_LIST[TABLA]
 	current_command: STRING
 	new_table: TABLA
 

@@ -20,11 +20,11 @@ feature {NONE} -- Initialization
 		do
 			column_name:=name
 			type:= "str"
-			create column_data.make (0)
+			create column_data.make
 		end
 
 feature -- Access
-	get_data : ARRAYED_LIST[STRING]
+	get_data : LINKED_LIST[STRING]
 		do Result :=column_data end
 
 	get_count: INTEGER
@@ -34,8 +34,11 @@ feature -- Access
 feature -- Basic operations
 
 	get_data_row(index: INTEGER) :STRING
+		local
+			temp_row:STRING
 		do
-		Result :=column_data.array_at (index)
+			temp_row:=column_data.at(index)
+			Result :=temp_row.out
 		end
 
 	not_replicate_data
@@ -70,6 +73,34 @@ feature -- Basic operations
 			end
 		end
 
+	verify_condition(operator,condition:STRING; contRows:INTEGER):BOOLEAN
+		local
+			debug
+				data:STRING
+			end
+			ok:BOOLEAN
+		do
+			--cond:="'"+condition+"'"
+			data:=column_data.at (contRows)
+			--print("%N"+condition+"%T"+data+"%N")
+			if operator.is_equal ("=")then
+					ok:=data.is_equal (condition)
+			elseif operator.is_equal ("!=") then
+					ok:=not data.is_equal (condition)
+			elseif operator.is_equal ("<") then
+					ok:=data.is_less (condition)
+			elseif operator.is_equal ("<=") then
+					ok:=data.is_less_equal (condition)
+			elseif operator.is_equal (">=") then
+					ok:=data.is_greater_equal (condition)
+			elseif operator.is_equal (">") then
+					ok:=data.is_greater (condition)
+			end
+
+			Result:=ok
+		end
+
+
 feature
 	delete_data (index: INTEGER)
 		do
@@ -79,6 +110,6 @@ feature
 		end
 
 feature {NONE} -- Implementation
-	column_data: ARRAYED_LIST[STRING]
+	column_data: LINKED_LIST[STRING]
 
 end

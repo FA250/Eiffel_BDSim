@@ -36,6 +36,9 @@ feature -- Basic operations
 		deferred
 		end
 
+	verify_condition(operator,condition:STRING; contRows:INTEGER):BOOLEAN
+		deferred
+		end
 
 feature {NONE} -- Implementation
 	column_name: STRING

@@ -17,7 +17,7 @@ feature {NONE} -- Initialization
 		do
 			table_name:=nombre
 			id:= ""
-			create rows.make(0)
+			create rows.make
 		end
 
 
@@ -26,7 +26,7 @@ feature -- Access
 		do Result :=table_name end
 	get_id : STRING
 		do Result :=id end
-	get_rows : ARRAYED_LIST[COLUMNA]
+	get_rows : LINKED_LIST[COLUMNA]
 		do Result :=rows end
 	get_number_rows : INTEGER
 		do Result :=rows.count end
@@ -42,23 +42,45 @@ feature -- Basic operations
 			c:=rows.item
 
 			from
-				contRows:=0
+				contRows:=1
 			until
-				contRows.is_equal (c.get_count)
+				contRows.is_equal (c.get_count+1)
 			loop
 				if verify_condition(field,operator,condition,contRows) then
+					print ("%TFila Eliminada:")
 					from
 						rows.start
 					until
 						rows.off
 					loop
+						print ("%T")
 						column:=rows.item
+						print(column.get_data_row(contRows))
 						column.delete_data (contRows)
+						print ("%T")
 						rows.forth
 					end
+					contRows:=contRows-1
+					print ("%N")
 				end
 					contRows:=contRows+1
 			end
+		end
+	verify_condition(field,operator,condition:STRING; contRows:INTEGER):BOOLEAN
+		local
+			correct:BOOLEAN
+		do
+			from
+				rows.start
+			until
+				rows.off
+			loop
+				if rows.item.get_nom.is_equal (field) then
+					correct:=rows.item.verify_condition (operator, condition, controws)
+				end
+				rows.forth
+			end
+			Result :=correct
 		end
 
 	show_columns_condition(field,operator,condition:STRING)
@@ -73,9 +95,9 @@ feature -- Basic operations
 			print_column_names
 
 			from
-				contRows:=0
+				contRows:=1
 			until
-				contRows.is_equal (c.get_count)
+				contRows.is_equal (c.get_count+1)
 			loop
 				if verify_condition(field,operator,condition,contRows) then
 					from
@@ -95,49 +117,7 @@ feature -- Basic operations
 			end
 		end
 
-	verify_condition(field,operator,condition:STRING; contRows:INTEGER):BOOLEAN
-		local
-			data:STRING
-			ok:BOOLEAN
-		do
-			from
-				rows.start
-				ok:=false
-			until
-				rows.off
-			loop
-				if field.is_equal (rows.item.get_nom) then
-					data:=rows.item.get_data_row (contRows)
-					if operator.is_equal ("=")then
-						if data.is_equal (condition) then
-							ok:=true
-						end
-					elseif operator.is_equal ("!=") then
-						if not data.is_equal (condition) then
-							ok:=true
-						end
-					elseif operator.is_equal ("<") then
-						if data < condition then
-							ok:=true
-						end
-					elseif operator.is_equal ("<=") then
-						if data <= condition then
-							ok:=true
-						end
-					elseif operator.is_equal (">=") then
-						if data >= condition then
-							ok:=true
-						end
-					elseif operator.is_equal (">") then
-						if data > condition then
-							ok:=true
-						end
-					end
-				end
-				rows.forth
-			end
-			Result:=ok
-		end
+
 
 	show_columns
 		local
@@ -150,9 +130,9 @@ feature -- Basic operations
 			print("%N")
 			print_column_names
 			from
-				contRows:=0
+				contRows:=1
 			until
-				contRows.is_equal (c.get_count)
+				contRows.is_equal (c.get_count+1)
 			loop
 				from
 					rows.start
@@ -288,7 +268,7 @@ feature -- Basic operations
 
 feature {NONE} --Implementation
 	table_name: STRING
-	rows: ARRAYED_LIST[COLUMNA]
+	rows: LINKED_LIST[COLUMNA]
 	id : STRING
 
 invariant
