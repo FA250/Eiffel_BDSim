@@ -32,7 +32,85 @@ feature -- Access
 		do Result :=rows.count end
 
 feature -- Basic operations
-	show_columns()
+	show_columns_condition(field,operator,condition:STRING)
+		local
+			contRows:INTEGER
+			column:COLUMNA
+			c:COLUMNA
+		do
+			rows.start
+			c:=rows.item
+			print("%N")
+			print_column_names
+
+			from
+				contRows:=0
+			until
+				contRows.is_equal (c.get_count)
+			loop
+				if verify_condition(field,operator,condition,contRows) then
+					from
+						rows.start
+					until
+						rows.off
+					loop
+						print ("%T")
+						column:=rows.item
+						print(column.get_data_row(contRows))
+						print ("%T")
+						rows.forth
+					end
+					print ("%N")
+				end
+					contRows:=contRows+1
+			end
+		end
+
+	verify_condition(field,operator,condition:STRING; contRows:INTEGER):BOOLEAN
+		local
+			data:STRING
+			ok:BOOLEAN
+		do
+			from
+				rows.start
+				ok:=false
+			until
+				rows.off
+			loop
+				if field.is_equal (rows.item.get_nom) then
+					data:=rows.item.get_data_row (contRows)
+					if operator.is_equal ("=")then
+						if data.is_equal (condition) then
+							ok:=true
+						end
+					elseif operator.is_equal ("!=") then
+						if not data.is_equal (condition) then
+							ok:=true
+						end
+					elseif operator.is_equal ("<") then
+						if data < condition then
+							ok:=true
+						end
+					elseif operator.is_equal ("<=") then
+						if data <= condition then
+							ok:=true
+						end
+					elseif operator.is_equal (">=") then
+						if data >= condition then
+							ok:=true
+						end
+					elseif operator.is_equal (">") then
+						if data > condition then
+							ok:=true
+						end
+					end
+				end
+				rows.forth
+			end
+			Result:=ok
+		end
+
+	show_columns
 		local
 			contRows:INTEGER
 			column:COLUMNA
@@ -73,9 +151,10 @@ feature -- Basic operations
 			loop
 				print ("%T")
 				print(rows.item.get_nom)
-				print ("%T%N")
+				print ("%T")
 				rows.forth
 			end
+			print ("%N")
 		end
 
 	add_column (name, type: STRING)

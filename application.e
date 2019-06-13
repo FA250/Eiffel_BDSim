@@ -298,8 +298,8 @@ feature -- Commands
 		end
 
 	listar(table_name:STRING)
-		local
-			columns:ARRAYED_LIST[COLUMNA]
+		require
+			not get_tables.is_empty
 		do
 			from
 				tables.start
@@ -313,13 +313,28 @@ feature -- Commands
 			end
 		end
 
+	listar_condicion(table_name,field,operator,condition:STRING)
+		require
+			not get_tables.is_empty
+		do
+			from
+				tables.start
+			until
+				tables.off
+			loop
+				if tables.item.get_nom.is_equal (table_name) then
+					tables.item.show_columns_condition(field,operator,condition)
+				end
+				tables.forth
+			end
+		end
 
 
 feature -- User input
 	execute_cmd (s:STRING)
 		local
 			tokens: LIST[STRING]
-			com, name, type: STRING
+			com, name, type, field, operator, condition: STRING
 
 		do
 			tokens := s.split (' ')
@@ -510,11 +525,17 @@ feature -- User input
 			    			io.put_new_line
 			    			io.put_string ("%T%TTodavia no existen datos en la tabla")
 						end
-					else
+					elseif tokens.count>4 then
 						tokens.forth
 						name:=tokens.item
+						tokens.forth
+						field:=tokens.item
+						tokens.forth
+						operator:=tokens.item
+						tokens.forth
+						condition:=tokens.item
 						if verify_table_data_exits(name) then
-							--listar_condicion(name)
+							listar_condicion(name,field,operator,condition)
 						else
 							io.put_string ("%T-- Error con el comando listar --")
 			    			io.put_new_line
