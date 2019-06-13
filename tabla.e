@@ -69,14 +69,16 @@ feature -- Basic operations
 	verify_condition(field,operator,condition:STRING; contRows:INTEGER):BOOLEAN
 		local
 			correct:BOOLEAN
+			column:COLUMNA
 		do
 			from
 				rows.start
 			until
 				rows.off
 			loop
-				if rows.item.get_nom.is_equal (field) then
-					correct:=rows.item.verify_condition (operator, condition, controws)
+				column:=rows.item
+				if column.get_nom.is_equal (field) then
+					correct:=column.verify_condition (operator, condition, controws)
 				end
 				rows.forth
 			end

@@ -38,7 +38,7 @@ feature -- Basic operations
 			temp_row:STRING
 		do
 			temp_row:=column_data.at(index)
-			Result :=temp_row.out
+			Result :=temp_row
 		end
 
 	not_replicate_data
@@ -75,16 +75,15 @@ feature -- Basic operations
 
 	verify_condition(operator,condition:STRING; contRows:INTEGER):BOOLEAN
 		local
-			debug
-				data:STRING
-			end
+			data:STRING
 			ok:BOOLEAN
 		do
-			--cond:="'"+condition+"'"
-			data:=column_data.at (contRows)
-			--print("%N"+condition+"%T"+data+"%N")
+			data:=column_data.at (contRows).to_string_32
 			if operator.is_equal ("=")then
 					ok:=data.is_equal (condition)
+					print("%NBBBB%T"+ok.out+"%N")
+					print("%N%T'"+data+"'%N")
+					print("%N%T'"+condition+"'%N")
 			elseif operator.is_equal ("!=") then
 					ok:=not data.is_equal (condition)
 			elseif operator.is_equal ("<") then
