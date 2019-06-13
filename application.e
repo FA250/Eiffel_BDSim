@@ -334,6 +334,7 @@ feature -- User input
 	execute_cmd (s:STRING)
 		local
 			tokens: LIST[STRING]
+			insertData: LIST[STRING]
 			com, name, type, field, operator, condition: STRING
 
 		do
@@ -488,10 +489,19 @@ feature -- User input
 					else
 						tokens.forth
 						name:=tokens.item
-						tokens.forth
-						tokens:= tokens.item.split (';')
-						if verify_number_columns(name,tokens) then
-							ins(name, tokens)
+						from
+							tokens.forth
+							field:=""
+						until
+							tokens.off
+						loop
+							field:=field+tokens.item+" "
+							tokens.forth
+						end
+
+						insertData:= field.split (';')
+						if verify_number_columns(name,insertData) then
+							ins(name, insertData)
 						else
 							io.put_string ("%T-- Error con el comando ins --")
 			    			io.put_new_line
