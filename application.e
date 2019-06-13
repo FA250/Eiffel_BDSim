@@ -511,7 +511,11 @@ feature -- User input
 						until
 							tokens.off
 						loop
-							field:=field+tokens.item+" "
+							if tokens.item.is_equal(tokens.last) then
+								field:=field+tokens.item
+							else
+								field:=field+tokens.item+" "
+							end
 							tokens.forth
 						end
 

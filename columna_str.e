@@ -78,12 +78,9 @@ feature -- Basic operations
 			data:STRING
 			ok:BOOLEAN
 		do
-			data:=column_data.at (contRows).to_string_32
+			data:=column_data.at (contRows)
 			if operator.is_equal ("=")then
 					ok:=data.is_equal (condition)
-					print("%NBBBB%T"+ok.out+"%N")
-					print("%N%T'"+data+"'%N")
-					print("%N%T'"+condition+"'%N")
 			elseif operator.is_equal ("!=") then
 					ok:=not data.is_equal (condition)
 			elseif operator.is_equal ("<") then
